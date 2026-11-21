@@ -1,0 +1,148 @@
+Part A. Theory, 10 questions.
+
+Explain difference between newSignleThreadContext and Dispatchers.Unconfined. Show code example:
+newSingleThreadContext that confines all coroutines launched within its context to a single, dedicated thread.
+launch(single) { … }
+
+Dispacher.Unconfined in Kotlin coroutines is a coroutine dispatcher that is not consfined to any specific thread.
+launch(Dispatcher.Unconfined) { … }
+ 
+What is the difference between async and lauch?
+Return type, how to get result, join() vs await().
+async returns: Defrred<T>, Result: Read with await(), User for: a computation you wait for, Waiting: await().
+
+launch returns: Job, Result: none, User for: work whose result you do not need, Waiting: join()
+Rule: launch for “do something”, async for “compute something”.
+ 
+What is coroutine? A coroutine can suspend  (give thread back) instead of block (hold the thread and wait) 
+To create applications that perform multiple tasks at once, a concept known as concurrency, Kotlin uses coroutines. A coroutine is a suspendable computation that lets you write concurrent code in a clear, sequential style. Coroutines can run concurrently with other coroutines and potentially in parallel.
+ 
+What does suspend keyword do? Does it create new thread? Who can call suspend function?
+The most basic building block of coroutines is the suspending function. It allows a running operation to pause and resume later without affecting the structure of your code.
+The most basic building block of coroutines is the suspending function. It allows a running operation to pause and resume later without affecting the structure of your code.
+You can only call a suspending function from another suspending function. To call suspending functions at the entry point of a Kotlin application, mark the main() function with the suspend keyword
+ 
+Explain concurrency vs parallelism?
+1. Concurrency
+
+Concurrency means multiple tasks make progress during overlapping periods of time, but they don't necessarily execute simultaneously.
+
+
+Tasks can take turns executing.
+
+One thread can handle multiple coroutines.
+
+When one coroutine suspends, another can execute.
+ 
+
+2.Parallelism means multiple tasks execute at exactly the same time.
+
+Tasks run simultaneously.
+
+Usually requires multiple threads and multiple CPU cores.
+
+Different CPU cores can execute different tasks at the same time.
+
+
+
+6.What is the structured concurrency?
+
+Structured concurrency is a programming principle where coroutines are organized in a parent-child hierarchy (tree structure).
+
+It ensures that coroutines have a clear lifecycle and that parent coroutines manage their child coroutines.
+
+Parent coroutine: The coroutine that launches other coroutines.
+
+Child coroutine: A coroutine launched inside another coroutine.
+
+A parent manages the lifecycle of its children.
+
+Parent failure normally cancels all its children.
+
+If the parent encounters an uncaught exception, its children are cancelled.
+
+The failure is propagated through the coroutine hierarchy.
+
+The parent completes exceptionally.
+
+Parent failure normally cancels all its children.
+
+If the parent encounters an uncaught exception, its children are cancelled.
+
+The failure is propagated through the coroutine hierarchy.
+
+The parent completes exceptionally.
+
+
+
+7. Compare builders: launch, async, runBlocking, withContext, coroutineScope. 
+
+launch
+
+Purpose: Starts a new coroutine without returning a result.
+
+Returns a job.
+
+Used for tasks that do not need to return a value.
+
+Examples: updating UI, logging, sending notifications.
+
+async
+
+Purpose: Starts a coroutine that produces a result.
+
+Returns a Deferred<T>.
+
+Use .await() to get the result.
+
+Useful for parallel tasks that return values.
+
+
+
+8.What is CoroutineScope and what is CoroutineContext? 
+CoroutineScope defines the lifecycle of coroutines.
+
+It determines:
+
+scope manages the coroutine's lifecycle.
+
+launch starts a coroutine inside that scope.
+
+The coroutine inherits the scope's context.
+
+
+
+CoroutineContext is a collection of elements that define how a coroutine behaves and executes.
+
+It can contain:
+
+Job– manages the coroutine lifecycle.
+
+CoroutineDispacher – determines which thread or threads execute the coroutine.
+
+CoroutineName – gives a coroutine a name.
+
+CoroutineExceptionHandler – handles uncaught coroutine exceptions.
+
+
+
+9.When to use Dispatchers.Default, IO and Main?
+The three most commonly used dispatchers are:
+
+Dispatchers.Default: For CPU-intensive tasks. Example: sorting a large list. Avoid blocking I/O.
+
+Dispatchers.IO: For Input/Output tasks. Example: reading files or database operations. Avoid CPU-heavy calculations.
+
+Dispatchers.Main: For UI operations. Example: updating TextView. Avoid heavy calculations and blocking operations.
+
+
+
+10.-Explain line by line: viewModelScope.launch { withContext(Dispatchers.IO) { ... } } | Coroutines on Android
+•On which thread each part runs? What happens to the coroutine when ViewModel is cleared?
+
+viewModelScope.launch – Starts a coroutine associated with the ViewModel. Runs on the Main dispatcher by default.
+
+withContext(Dispatchers.IO) – Switches execution to the IO dispatcher for background operations, such as database and file operations.
+
+After withContext – Execution returns to the original dispatcher (Main).
+
